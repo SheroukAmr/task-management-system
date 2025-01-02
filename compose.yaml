@@ -1,1 +1,9 @@
+version: "3.8"
 services:
+  app:
+    build:
+      context: . # Make sure this points to the project root
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_PROFILES_ACTIVE: prod

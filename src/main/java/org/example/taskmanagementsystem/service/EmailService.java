@@ -1,6 +1,7 @@
-package org.example.taskmanagementsystem.security;
+package org.example.taskmanagementsystem.service;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.mail.SimpleMailMessage;
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
@@ -10,24 +11,43 @@ public class EmailService {
 
     @Autowired
     private JavaMailSender emailSender;
+    @Value("${spring.mail.username}")
+    private String fromEmail;
 
-    public void sendEmail(String to, String subject, String text) {
+    public void sendTaskCreationNotification(String toEmail, String taskTitle) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(to);
-        message.setSubject(subject);
-        message.setText(text);
+        message.setFrom(fromEmail);
+        message.setTo(toEmail);
+        message.setSubject("New Task Created: " + taskTitle);
+        message.setText("A new task titled '" + taskTitle + "' has been assigned to you.");
+
         emailSender.send(message);
     }
 
-    public void sendTaskDeadlineReminder(String to, String taskTitle, String dueDate) {
-        String subject = "Upcoming Task Deadline Reminder";
-        String text = "Reminder: The task '" + taskTitle + "' is due on " + dueDate + ". Please ensure you complete it on time.";
-        sendEmail(to, subject, text);
+    public void sendTaskUpdateNotification(String toEmail, String taskTitle) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(fromEmail);
+        message.setTo(toEmail);
+        message.setSubject("Task Updated: " + taskTitle);
+        message.setText( "Your task has been updated.");
+
+        emailSender.send(message);
+    }
+    public void sendTaskDeleteNotification(String toEmail, String taskTitle) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(fromEmail);
+        message.setTo(toEmail);
+        message.setSubject("Task delete: " + taskTitle);
+        message.setText("Your task has been deleted: '" + taskTitle);
+        emailSender.send(message);
     }
 
-    public void sendTaskUpdateNotification(String to, String taskTitle, String updateMessage) {
-        String subject = "Task Update: " + taskTitle;
-        String text = "There has been an update to your task: '" + taskTitle + "'.\n" + updateMessage;
-        sendEmail(to, subject, text);
+    public void sendTaskDeadlineReminder(String toEmail, String taskTitle, String dueDate) {
+        SimpleMailMessage message = new SimpleMailMessage();
+        message.setFrom(fromEmail);
+        message.setTo(toEmail);
+        message.setSubject("Upcoming Task due date Reminder");
+        message.setText("Reminder: The task '" + taskTitle + "' is due on " + dueDate + ". Please ensure you complete it on time.");
+        emailSender.send(message);
     }
 }
